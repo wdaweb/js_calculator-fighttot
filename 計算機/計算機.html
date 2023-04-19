@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: 'Rye', cursive;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    table {
+      position: absolute;
+      border: none;
+      width: 600px;
+      height: 700px;
+      table-layout: fixed;
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.664);
+      border-radius: 5px;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    td {
+
+      text-align: center;
+      vertical-align: middle;
+      transition: 0.5s;
+      border: none;
+      font-size: 2rem;
+      position: relative;
+
+    }
+
+    td:hover {
+      background: rgba(255, 165, 0, 1);
+      color: white;
+      border-radius: 20px;
+      transform: scale(1.2);
+      text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.664);
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.664);
+      cursor: pointer;
+    }
+
+    #text {
+      text-align: right;
+      font-family: 'Black Ops One', cursive;
+      /* box-sizing: border-box; */
+      overflow: hidden;
+    }
+
+    #text::after {
+      content: '';
+      width: 90%;
+      height: 4px;
+      top: 90%;
+      left: 5%;
+      background-color: rgba(128, 128, 128, 0.6);
+      position: absolute;
+    }
+
+
+
+    .red {
+      color: orangered;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="./未命名.png" alt="">
+  <table border="1">
+    <tr>
+      <td colspan="4" style="overflow:auto;padding:10px 20px;">
+        <div id="text">0</div>
+      </td>
+    </tr>
+    <tr class="red">
+      <td>C</td>
+      <td>/</td>
+      <td>*</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>8</td>
+      <td>9</td>
+      <td rowspan="2" class="red">+</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>5</td>
+      <td>6</td>
+
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td rowspan="2" class="red">=</td>
+    </tr>
+    <tr>
+      <td colspan="2">0</td>
+      <td>.</td>
+    </tr>
+  </table>
+
+  <script>
+    const text = document.getElementById('text')
+    const btns = document.querySelectorAll('td:not(#text)')
+
+
+    for (const btn of btns) {
+      btn.addEventListener('click', () => {
+        const btntext = btn.innerText
+        const operators = ['+', '-', '*', '/']
+        const lasttext = text.innerText[text.innerText.length - 1]
+        //如果案的鍵是=
+        if (btntext === '=') {
+          //如果最後不是運算子才計算
+          if (!operators.includes(lasttext)) {
+            text.innerText = eval(text.innerText)
+          }
+        }
+        // 如果按 C，歸 0
+        else if (btntext === 'C') {
+          text.innerText = '0'
+        }
+        // 如果現在是 0，按的是數字，把文字取代
+        else if (text.innerText === '0' && !isNaN(parseInt(btntext))) {
+          text.innerText = btntext
+        }
+
+
+
+        // 如果最後一個字是運算子
+        else if (operators.includes(lasttext)) {
+          // 現在按的不是運算子，才加上去
+          if (!operators.includes(btntext)) {
+            text.innerText += btntext
+          }
+        }
+        //如果按的是.
+        else if (btntext === '.') {
+          let canAddDot = true
+          for (let i = text.innerText.length - 1; i >= 0; i--) {
+            // 如果先遇到運算子，一定可以加 .
+            if (operators.includes(text.innerText[i])) break
+            // 如果先遇到 .，一定不能加 .
+            if (text.innerText[i] === '.') {
+              canAddDot = false
+              break
+            }
+          }
+          if (canAddDot) text.innerText += '.'
+        }
+        // 如果最後一個字不是運算子，加上去
+        else {
+          text.innerText += btntext
+        }
+
+      })
+    }
+
+
+    document.addEventListener('keydown', event => {
+      const btnText = event.key
+      const operators = ['+', '-', '*', '/']
+      const lastText = text.innerText[text.innerText.length - 1]
+      // 如果按的鍵是 =
+      if (btnText === '=' || btnText === 'Enter') {
+        // 如果最後一個字不是運算子，才計算
+        if (!operators.includes(lastText)) {
+          text.innerText = eval(text.innerText)
+        }
+      }
+      // 如果按 C，歸 0
+      else if (btnText === 'c') {
+        text.innerText = '0'
+      }
+      // 如果現在是 0，按的是數字，把文字取代
+      else if (text.innerText === '0' && !isNaN(parseInt(btnText))) {
+        text.innerText = btnText
+      }
+      // 如果最後一個字是運算子
+      else if (operators.includes(lastText)) {
+        // 現在按的不是運算子，且是數字才加上去
+        if (!operators.includes(btnText) && !isNaN(parseInt(btnText))) {
+          text.innerText += btnText
+        }
+      }
+      // 如果最後一個字不是運算子，且按的是數字或運算子，加上去
+      else if (!isNaN(parseInt(btnText)) || operators.includes(btnText)) {
+        text.innerText += btnText
+      }
+      // 如果按的是 .
+      else if (btnText === '.') {
+        let canAddDot = true
+        // 從最後一個字往前跑迴圈
+        for (let i = text.innerText.length - 1; i >= 0; i--) {
+          // 如果先遇到運算子，一定可以加 .
+          if (operators.includes(text.innerText[i])) break
+          // 如果先遇到 .，一定不能加 .
+          if (text.innerText[i] === '.') {
+            canAddDot = false
+            break
+          }
+        }
+        // 迴圈完可以加才
+        if (canAddDot) text.innerText += '.'
+      }
+    })
+
+
+
+  </script>
+</body>
+
+</html>
